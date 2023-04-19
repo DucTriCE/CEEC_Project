@@ -14,7 +14,6 @@
   * If no LICENSE file comes with this software, it is provided AS-IS.
   *
   ******************************************************************************
-  pha lum la lum la
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
