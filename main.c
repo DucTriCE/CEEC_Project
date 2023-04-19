@@ -112,7 +112,6 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);  
   /* USER CODE END Init */
 
   /* Configure the system clock */
