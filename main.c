@@ -51,7 +51,8 @@ DMA_HandleTypeDef hdma_usart1_tx;
 
 /* USER CODE BEGIN PV */
 uint16_t x=1;
-
+uint8_t UART1_rxBuffer = '1';
+uint8_t UART1_txBuffer[12] = "CO CHAY";
 
 /* USER CODE END PV */
 
@@ -82,7 +83,15 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		}
 }
 
-
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) 
+{
+    if (huart->Instance == USART1)       
+		{
+			if(UART1_rxBuffer == '1')x=1;
+			else x=0;
+			HAL_UART_Receive_DMA(&huart1, &UART1_rxBuffer, 1);
+		}
+}
 
 /* USER CODE END 0 */
 
@@ -94,7 +103,7 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
 			float volt, temp;
-			uint16_t j = 0;
+			uint16_t j = 0, count = 0;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -122,6 +131,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 	  lcd_init();
 		lcd_clear();
+		HAL_UART_Receive_DMA(&huart1, &UART1_rxBuffer, 1);
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
   /* USER CODE END 2 */
 
@@ -135,12 +145,16 @@ int main(void)
 					lcd_send_string("BAO DONG");
 					lcd_put_cur(1,0);
 					lcd_send_string(" CHAY CHAY CHAY ");
+					if(count==0)HAL_UART_Transmit(&huart1, UART1_txBuffer, 12, 100);
 					HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_9);
+					count++;
 					HAL_Delay(150);
 			}
 			else{
+					if(count >0) lcd_clear();
 					HAL_Delay(50);
 					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_SET);
+					count=0;
 					temp = 0;
 					uint16_t j = 0;
 					while(j<1000){
