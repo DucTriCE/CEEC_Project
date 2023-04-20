@@ -1,5 +1,5 @@
 /* USER CODE BEGIN Header */
-/**1
+/**
   ******************************************************************************
   * @file           : main.c
   * @brief          : Main program body
@@ -42,15 +42,16 @@
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
+
 I2C_HandleTypeDef hi2c1;
+
 UART_HandleTypeDef huart1;
 DMA_HandleTypeDef hdma_usart1_rx;
 DMA_HandleTypeDef hdma_usart1_tx;
 
 /* USER CODE BEGIN PV */
 uint16_t x=1;
-uint8_t UART1_RxBuffer = '1';
-uint8_t UART1_TxBuffer[12] = "CO CHAY";
+
 
 /* USER CODE END PV */
 
@@ -67,24 +68,21 @@ static void MX_USART1_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-  if (GPIO_Pin == GPIO_PIN_3){	
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_RESET);
-    x=0;
-  }
-  else if (GPIO_Pin == GPIO_PIN_5){
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, GPIO_PIN_SET);
-    x=1;
-  }
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+		 if (GPIO_Pin == GPIO_PIN_3)
+		{	
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET);
+				x=0;
+		}
+		else if (GPIO_Pin == GPIO_PIN_5)
+		{
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_SET);
+				x=1;
+		}
 }
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-  if (huart->Instance == USART1){
-    if(UART1_RxBuffer == '1')x=1;
-    else x=0;
-    HAL_UART_Receive_DMA(&huart1, &UART1_RxBuffer, 1);
-  }
-}
+
 
 /* USER CODE END 0 */
 
@@ -92,10 +90,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
   * @brief  The application entry point.
   * @retval int
   */
-int main(void){
+int main(void)
+{
   /* USER CODE BEGIN 1 */
-  float volt, temp;
-  uint16_t j = 0, count = 0;
+			float volt, temp;
+			uint16_t j = 0;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -104,6 +103,7 @@ int main(void){
   HAL_Init();
 
   /* USER CODE BEGIN Init */
+
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -120,57 +120,55 @@ int main(void){
   MX_ADC1_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  lcd_init();
-  lcd_clear();
-  HAL_UART_Receive_DMA(&huart1, &UART1_RxBuffer, 1);
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+	  lcd_init();
+		lcd_clear();
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    if(x==0){
-      lcd_clear();
-      lcd_put_cur(0,4);
-      lcd_send_string("BAO DONG");
-      lcd_put_cur(1,0);
-      lcd_send_string(" CHAY CHAY CHAY ");
-      if(count==0)HAL_UART_Transmit(&huart1, UART1_TxBuffer, 12, 100);
-      count++;
-      HAL_Delay(150);
-    }
-    else{
-      count=0;
-      temp = 0;
-      uint16_t j = 0;
-      lcd_clear();
-      while(j<1000){
-          HAL_ADC_Start(&hadc1);
-          HAL_ADC_PollForConversion(&hadc1, 100);
-          volt = HAL_ADC_GetValue(&hadc1);
-          HAL_ADC_Stop(&hadc1);
-          temp+=((volt*3300)/4095)/10;
-          j+=1;
-      }
-      temp/=1000;
-      char s[5];
-      sprintf(s, "%.1f", temp);
-      lcd_put_cur(0,0);
-      lcd_send_string ("Nhiet do:");
-      lcd_put_cur(0,10);
-      lcd_send_string(s);
-      lcd_put_cur(0,14);
-      lcd_send_string("oC");
-      if(temp>45){
-          lcd_put_cur(1,0);
-          lcd_send_string("Nhiet do cao");
-      }
-      else{
-          lcd_put_cur(1,0);
-          lcd_send_string("            ");			
-      }
-      HAL_Delay(500);
+			if(x==0){
+					lcd_clear();
+					lcd_put_cur(0,4);
+					lcd_send_string("BAO DONG");
+					lcd_put_cur(1,0);
+					lcd_send_string(" CHAY CHAY CHAY ");
+					HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_9);
+					HAL_Delay(150);
+			}
+			else{
+					HAL_Delay(50);
+					HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_SET);
+					temp = 0;
+					uint16_t j = 0;
+					while(j<1000){
+							HAL_ADC_Start(&hadc1);
+							HAL_ADC_PollForConversion(&hadc1, 100);
+							volt = HAL_ADC_GetValue(&hadc1);
+							HAL_ADC_Stop(&hadc1);
+							temp+=((volt*3300)/4095)/10;
+							j+=1;
+					}
+					temp/=1000;
+					char s[5];
+					sprintf(s, "%.1f", temp);
+					lcd_put_cur(0,0);
+					lcd_send_string ("Nhiet do:");
+					lcd_put_cur(0,10);
+					lcd_send_string(s);
+					lcd_put_cur(0,14);
+					lcd_send_string("oC");
+					if(temp>45){
+							lcd_put_cur(1,0);
+							lcd_send_string("Nhiet do cao");
+					}
+					else{
+							lcd_put_cur(1,0);
+							lcd_send_string("            ");			
+					}
+					HAL_Delay(500);
 		}
     /* USER CODE END WHILE */
 
@@ -378,6 +376,9 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_SET);
+
   /*Configure GPIO pin : PC13 */
   GPIO_InitStruct.Pin = GPIO_PIN_13;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -390,6 +391,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PB9 */
+  GPIO_InitStruct.Pin = GPIO_PIN_9;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI3_IRQn, 0, 0);
