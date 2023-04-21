@@ -101,7 +101,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-			float volt, temp;
+			float temp;
+      uint16_t adc_value;
 			uint16_t j = 0, count = 0;
   /* USER CODE END 1 */
 
@@ -159,9 +160,9 @@ int main(void)
 					while(j<1000){
 							HAL_ADC_Start(&hadc1);
 							HAL_ADC_PollForConversion(&hadc1, 100);
-							volt = HAL_ADC_GetValue(&hadc1);
+							adc_value = HAL_ADC_GetValue(&hadc1);
 							HAL_ADC_Stop(&hadc1);
-							temp+=((volt*3300)/4095)/10;
+							temp+=((adc_value*3300)/4095)/10;
 							j+=1;
 					}
 					temp/=1000;
