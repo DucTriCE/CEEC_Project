@@ -89,7 +89,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		{
 			if(UART1_rxBuffer == '1')x=1;
 			else x=0;
-			HAL_UART_Receive_DMA(&huart1, &UART1_rxBuffer, 1);
 		}
 }
 
